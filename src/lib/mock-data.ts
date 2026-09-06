@@ -698,3 +698,5 @@ export const destinations = [
   { id: 'kerala', name: 'Kerala', tagline: 'Backwaters & Ayurvedic Bliss', emoji: '🌴' },
   { id: 'goa', name: 'Goa', tagline: 'Beaches & Portuguese Heritage', emoji: '🏖️' },
 ];
+
+export const allPOIs = [...rajasthanPOIs, ...goaPOIs, ...keralaPOIs];

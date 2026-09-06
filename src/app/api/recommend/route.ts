@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rajasthanPOIs, vibeOptions } from '@/lib/mock-data';
+import { allPOIs, vibeOptions } from '@/lib/mock-data';
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
   const { destination, vibes, budget } = body;
 
-  let pois = [...rajasthanPOIs];
+  let pois = [...allPOIs];
 
   if (Array.isArray(vibes) && vibes.length > 0) {
     pois = pois

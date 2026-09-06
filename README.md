@@ -1,103 +1,60 @@
-# TravelAI — Personalized Dynamic Tour Planning & Operations Platform
+# TravelAI — Demodemo
 
-A working prototype for **PS ID-7** — Personalized Dynamic Tour Planning & Operations Platform built with Next.js 14, TypeScript, Tailwind CSS, and Framer Motion.
+> Personalized Dynamic Tour Planning — Chat-to-itinerary
 
-## 🚀 Quick Start
-
-```bash
-npm install
-npm run dev
-```
-
-Open http://localhost:3000
-
-## ✨ Features
-
-### Traveler App
-- **Screen 1 — Chatbox Hero**: Animated multi-hue gradient, glass-morphism chat card, MLM voice input, suggestion chips
-- **Screen 2 — Preference Quiz**: Conversational multi/multi/single-select questions, progress bar, animated transitions
-- **Screen 3 — Circular Animation**: Delight moment with orbiting preference chips, burst dots, docked capsule header
-- **Screen 4 — Curated Places**: Vibe-matched POI cards, crowd meters (Green/Yellow/Red), overtourism alternatives, add-to-cart fly animation
-- **Screen 5 — Cart Drawer**: Slide-in drawer, draggable reorder, estimated totals, finalize CTA
-- **Screen 6 — Finalize Form**: Travelers, children ages, duration, business trip blocker days, accommodation, transport, special needs
-- **Screen 7 — Generated Itinerary**: 3 GA-optimized variants (Relaxed/Balanced/Max Coverage), Pareto frontier chart, cost breakdown, AI-matched coordinator card, confetti on booking
-
-### Operator Console
-- Live tour map with pulsing group dots and delay flags
-- Tours table with real-time margin per tour
-- Coordinator Dispatch Board with AI matching suggestions (language, proximity, workload, rating)
-- Crisis Mode banner for disruption events
-- KPI cards (active tours, margin, coordinators, rating)
-
-## 🏗️ API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/recommend` | Destination + vibes → ranked POIs |
-| POST | `/api/cart` | Create/update cart |
-| POST | `/api/itinerary/optimize` | POIs + travelers → 3 itinerary variants |
-| GET | `/api/itinerary/:id/pareto` | Pareto frontier computation |
-| POST | `/api/book` | Book itinerary |
-| POST | `/api/dispatch` | AI coordinator assignment |
-| POST | `/api/rebalance` | Disruption → alternatives |
-| GET | `/api/operator/tours` | All tours overview |
-| GET | `/api/crowd/:poiId` | Real-time crowd data |
-
-## 🎨 Design System
-
-Based on the Mindtrip design system (Inter + Circular Std typography, OKLCH color tokens, pill-shaped CTAs, rounded-4xl/7xl surfaces):
-
-- **Colors**: Full token set (brand, accent, surface, atmospheric, hairlines, text, semantic, category palette)
-- **Typography**: 18-type scale (display-mega 128px → caption 12px)
-- **Rounded**: Full pill/radius scale (2px → 80px)
-- **Spacing**: 2px → 96px scale
-- **Elevation**: 4 shadow levels + ring variants
-- **Motion**: Framer Motion for all animations (float gradients, orbit rings, fly-to-cart, slide-in drawers, confetti)
-
-## 📁 Project Structure
+## Architecture
 
 ```
 src/
 ├── app/
-│   ├── api/                    # REST API routes
-│   │   ├── recommend/
-│   │   ├── cart/
-│   │   ├── itinerary/optimize/
-│   │   ├── itinerary/[id]/pareto/
-│   │   ├── dispatch/
-│   │   ├── rebalance/
-│   │   ├── operator/tours/
-│   │   └── crowd/[poiId]/
-│   ├── globals.css             # Design tokens + animations
-│   ├── layout.tsx
-│   └── page.tsx                # Root router (screens switch)
-├── lib/
-│   ├── app-context.tsx         # Global state
-│   ├── components/             # All screens
-│   │   ├── TopNav.tsx
-│   │   ├── ChatHero.tsx
-│   │   ├── PreferenceQuiz.tsx
-│   │   ├── CircularAnimation.tsx
-│   │   ├── CuratedPlaces.tsx
-│   │   ├── CartDrawer.tsx
-│   │   ├── FinalizeForm.tsx
-│   │   ├── ItineraryView.tsx
-│   │   └── OperatorConsole.tsx
-│   ├── design-tokens.ts        # Type-safe token exports
-│   ├── ga.ts                   # GA optimizer + Pareto frontier
-│   ├── mock-data.ts            # 16 Rajasthan POIs + coordinators
-│   ├── placeholder-images.ts   # Gradient image mapping
-│   ├── types.ts                # TypeScript data models
-│   └── utils.ts                # Helpers (currency, colors, vibes)
+│   ├── page.tsx                # Main entry point (AppRouter)
+│   ├── layout.tsx              # Root layout with metadata
+│   ├── globals.css             # Global styles & CSS variables
+│   ├── favicon.ico             # Favicon
+│   ├── api/                    # Backend API routes
+│   │   ├── cart/route.ts       # Create cart from POI IDs
+│   │   ├── crowd/[poiId]/route.ts  # Crowd level for a POI
+│   │   ├── dispatch/route.ts   # Assign coordinator to itinerary
+│   │   ├── itinerary/optimize/route.ts  # Generate itinerary variants
+│   │   ├── itinerary/[id]/pareto/route.ts  # Pareto frontier analysis
+│   │   ├── operator/tours/route.ts  # Mock tour management
+│   │   ├── rebalance/route.ts  # Auto-rebalance disrupted tours
+│   │   └── recommend/route.ts  # POI recommendations by vibe/budget
+│   └── frontend/
+│       └── components/         # Frontend React components
+│           ├── ChatHero.tsx          # Landing/search hero
+│           ├── PreferenceQuiz.tsx    # Vibe/budget/pace quiz
+│           ├── CuratedPlaces.tsx     # POI grid for selected destination
+│           ├── CircularAnimation.tsx # Visual tour animation
+│           ├── ItineraryView.tsx     # Day-by-day itinerary
+│           ├── FinalizeForm.tsx      # Booking confirmation
+│           ├── MyItinerary.tsx       # User itinerary dashboard
+│           ├── OperatorConsole.tsx   # Operator dispatch board
+│           ├── TopNav.tsx            # Navigation bar
+│           ├── CartDrawer.tsx        # Shopping cart
+│           └── DevFab.tsx            # Dev tools fab button
+└── lib/
+    ├── types.ts            # TypeScript interfaces (POI, Coordinator, etc.)
+    ├── mock-data.ts        # POI data for Rajasthan, Goa, Kerala + coordinators
+    ├── utils.ts            # Helper functions (formatCurrency, getVibeColor, etc.)
+    ├── ga.ts               # Genetic algorithm for itinerary optimization
+    ├── placeholder-images.ts # Gradient fallbacks for failed images
+    └── app-context.tsx     # React context (global state + localStorage persistence)
 ```
 
-## 🎬 Demo Flow
+## State Persistence
 
-1. Type "Rajasthan" in chatbox
-2. Complete preference quiz (vibes → budget → pace → interests)
-3. Watch circular animation
-4. Add 4-5 places to itinerary
-5. Finalize form (2 adults, child, 6 nights, business trip)
-6. "Create My Itinerary" → GA generates 3 variants
-7. Select Balanced, view Pareto, Book All
-8. Toggle Operator in nav → see live tour map + dispatch
+App state (`currentScreen`, `destination`, selected vibes, budget, pace, etc.) is persisted to `localStorage` so the app restores the last visited screen on page refresh.
+
+## Destinations
+
+- **Rajasthan** — Amber Fort, City Palace, Hawa Mahal, Jal Mahal, Nahargarh, Jaisalmer Fort, Udaipur Palace, etc.
+- **Goa** — Calangute Beach, Basilica of Bom Jesus, Fort Aguada, Spice Plantation, Dudhsagar Falls, Palolem Beach, etc.
+- **Kerala** — Alleppey Houseboat, Munnar Tea Gardens, Periyar Wildlife, Padmanabhaswamy Temple, Kovalam Beach, Wayanad, Fort Kochi, Ayurveda Retreat, etc.
+
+## Running
+
+```bash
+npm run dev   # Starts on http://localhost:3000
+npm run build # Production build
+```

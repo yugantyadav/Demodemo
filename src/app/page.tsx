@@ -1,17 +1,17 @@
 'use client';
 
 import { AppProvider, useApp } from '@/lib/app-context';
-import TopNav from '@/lib/components/TopNav';
-import ChatHero from '@/lib/components/ChatHero';
-import PreferenceQuiz from '@/lib/components/PreferenceQuiz';
-import CircularAnimation from '@/lib/components/CircularAnimation';
-import CuratedPlaces from '@/lib/components/CuratedPlaces';
-import CartDrawer from '@/lib/components/CartDrawer';
-import FinalizeForm from '@/lib/components/FinalizeForm';
-import ItineraryView from '@/lib/components/ItineraryView';
-import MyItinerary from '@/lib/components/MyItinerary';
-import OperatorConsole from '@/lib/components/OperatorConsole';
-import DevFab from '@/lib/components/DevFab';
+import TopNav from '@/app/frontend/components/TopNav';
+import ChatHero from '@/app/frontend/components/ChatHero';
+import PreferenceQuiz from '@/app/frontend/components/PreferenceQuiz';
+import CircularAnimation from '@/app/frontend/components/CircularAnimation';
+import CuratedPlaces from '@/app/frontend/components/CuratedPlaces';
+import CartDrawer from '@/app/frontend/components/CartDrawer';
+import FinalizeForm from '@/app/frontend/components/FinalizeForm';
+import ItineraryView from '@/app/frontend/components/ItineraryView';
+import MyItinerary from '@/app/frontend/components/MyItinerary';
+import OperatorConsole from '@/app/frontend/components/OperatorConsole';
+import DevFab from '@/app/frontend/components/DevFab';
 import { AnimatePresence, motion } from 'framer-motion';
 
 function AppRouter() {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rajasthanPOIs } from '@/lib/mock-data';
+import { allPOIs } from '@/lib/mock-data';
 
 interface CartRequestBody {
   userId?: string;
@@ -13,7 +13,7 @@ interface CartRequestBody {
 
 export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => ({}))) as CartRequestBody;
-  const items = (body.items || []).map(id => rajasthanPOIs.find(p => p.poiId === id)).filter(Boolean);
+  const items = (body.items || []).map(id => allPOIs.find(p => p.poiId === id)).filter(Boolean);
 
   return NextResponse.json({
     cartId: `c_${Date.now()}`,

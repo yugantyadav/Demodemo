@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rajasthanPOIs } from '@/lib/mock-data';
+import { allPOIs } from '@/lib/mock-data';
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ poiId: string }> }
 ) {
   const { poiId } = await params;
-  const poi = rajasthanPOIs.find(p => p.poiId === poiId);
+  const poi = allPOIs.find(p => p.poiId === poiId);
 
   if (!poi) {
     return NextResponse.json({ error: 'POI not found' }, { status: 404 });

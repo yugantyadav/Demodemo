@@ -1,11 +1,3 @@
-export interface TravelerDNA {
-  userId: string;
-  embedding: number[];
-  vibes: Record<string, number>;
-  budgetTier: 'budget' | 'mid' | 'luxury';
-  history: string[];
-}
-
 export interface POI {
   poiId: string;
   name: string;
@@ -28,17 +20,6 @@ export interface CartItem {
   poiId: string;
   poi: POI;
   addedAt: Date;
-}
-
-export interface Cart {
-  cartId: string;
-  userId: string;
-  destination: string;
-  items: CartItem[];
-  prefs: {
-    vibes: string[];
-    budget: string;
-  };
 }
 
 export interface ItinerarySlot {
@@ -71,21 +52,6 @@ export interface ItineraryVariant {
   paretoRank: number;
 }
 
-export interface Itinerary {
-  itineraryId: string;
-  travelers: {
-    adults: number;
-    children: { age: number }[];
-  };
-  duration: number;
-  variants: ItineraryVariant[];
-  selectedVariantId?: string;
-  status: 'draft' | 'booked' | 'active' | 'completed' | 'cancelled';
-  coordinatorId?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface Coordinator {
   coordinatorId: string;
   name: string;
@@ -97,54 +63,6 @@ export interface Coordinator {
   workload: number;
   availability: Date[];
   bio: string;
-}
-
-export interface Booking {
-  bookingId: string;
-  itineraryId: string;
-  items: {
-    poiId: string;
-    vendorId: string;
-    date: string;
-    time: string;
-    cost: number;
-    status: 'pending' | 'confirmed' | 'cancelled';
-  }[];
-  totalCost: number;
-  paymentStatus: 'pending' | 'paid' | 'refunded' | 'partial';
-  createdAt: Date;
-}
-
-export interface DisruptionEvent {
-  eventId: string;
-  type: 'delay' | 'cancellation' | 'weather' | 'traffic' | 'manual';
-  poiId?: string;
-  itineraryId: string;
-  description: string;
-  severity: 'low' | 'medium' | 'high';
-  detectedAt: Date;
-  resolvedAt?: Date;
-}
-
-export interface RebalanceOption {
-  optionId: string;
-  description: string;
-  costDelta: number;
-  preferenceRetention: number;
-  feasibility: number;
-  changes: {
-    poiId: string;
-    newTime?: string;
-    newPoiId?: string;
-    action: 'shift' | 'replace' | 'remove' | 'add';
-  }[];
-}
-
-export interface ParetoPoint {
-  cost: number;
-  experienceScore: number;
-  paceScore: number;
-  variantId: string;
 }
 
 export interface VibeOption {
@@ -163,4 +81,11 @@ export interface PreferenceQuestion {
   max?: number;
   step?: number;
   placeholder?: string;
+}
+
+export interface ParetoPoint {
+  cost: number;
+  experienceScore: number;
+  paceScore: number;
+  variantId: string;
 }

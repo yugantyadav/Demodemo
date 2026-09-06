@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rajasthanPOIs } from '@/lib/mock-data';
+import { allPOIs } from '@/lib/mock-data';
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
@@ -9,8 +9,8 @@ export async function POST(request: NextRequest) {
     reason = 'Schedule change',
   } = body;
 
-  const affected = rajasthanPOIs.find(p => p.poiId === affectedPoiId);
-  const alternatives = rajasthanPOIs
+  const affected = allPOIs.find(p => p.poiId === affectedPoiId);
+  const alternatives = allPOIs
     .filter(p => p.poiId !== affectedPoiId && p.crowdLevel !== 'high' && p.category !== 'hotel')
     .slice(0, 3)
     .map((poi, i) => ({
