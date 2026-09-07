@@ -46,7 +46,7 @@ export default function FinalizeForm() {
     setCtxTransportMode(transportMode);
 
     setTimeout(() => {
-      const variants = loadGAItineraries(state.cart.map((item:any) => item.poi));
+      const variants = loadGAItineraries(state.cart.map((item:any) => item.poi), nights);
       setItinerary(variants);
       setIsGenerating(false);
       setCurrentScreen('itinerary');

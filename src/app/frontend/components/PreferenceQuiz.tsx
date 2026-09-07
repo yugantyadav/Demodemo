@@ -37,7 +37,16 @@ export default function PreferenceQuiz() {
     }
   }, [question, answers, state.interests, toggleInterest, setSelectedVibes]);
 
+  const hasAnswer = () => {
+    const ans = answers[question.id];
+    if (question.type === 'single') return typeof ans === 'string' && ans.length > 0;
+    if (question.type === 'multi') return Array.isArray(ans) && ans.length > 0;
+    if (question.type === 'text') return typeof ans === 'string' && ans.trim().length > 0;
+    return false;
+  };
+
   const handleNext = () => {
+    if (!hasAnswer()) return;
     if (currentStep < totalSteps - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
@@ -193,9 +202,10 @@ export default function PreferenceQuiz() {
 
           <button
             onClick={handleNext}
-            className="flex items-center gap-2 px-6 h-10 rounded-full text-sm font-medium transition-all active:scale-95"
+            disabled={!hasAnswer()}
+            className="flex items-center gap-2 px-6 h-10 rounded-full text-sm font-medium transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              background: 'var(--color-brand-black)',
+              background: hasAnswer() ? 'var(--color-brand-black)' : 'var(--color-category-gray-4)',
               color: 'var(--color-brand-white)',
             }}
           >

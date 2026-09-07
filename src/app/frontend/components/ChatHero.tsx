@@ -44,9 +44,9 @@ export default function ChatHero() {
       {/* Animated Gradient Background */}
       <div className="absolute inset-0 animate-hero-gradient opacity-80" />
       
-      {/* Floating Destination Images */}
+      {/* Floating Destination Images - hidden on small screens to avoid overlap */}
       <motion.div
-        className="absolute top-[15%] left-[8%] w-32 h-24 sm:w-48 sm:h-36 rounded-2xl overflow-hidden animate-float-1 opacity-90"
+        className="hidden sm:block absolute top-[15%] left-[8%] w-48 h-36 rounded-2xl overflow-hidden animate-float-1 opacity-90"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 0.9, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.8 }}
@@ -57,7 +57,7 @@ export default function ChatHero() {
       </motion.div>
 
       <motion.div
-        className="absolute top-[20%] right-[10%] w-28 h-20 sm:w-40 sm:h-28 rounded-2xl overflow-hidden animate-float-2 opacity-90"
+        className="hidden sm:block absolute top-[20%] right-[10%] w-40 h-28 rounded-2xl overflow-hidden animate-float-2 opacity-90"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 0.9, scale: 1 }}
         transition={{ delay: 0.7, duration: 0.8 }}
@@ -68,7 +68,7 @@ export default function ChatHero() {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-[20%] left-[15%] w-24 h-16 sm:w-36 sm:h-24 rounded-2xl overflow-hidden animate-float-3 opacity-90"
+        className="hidden sm:block absolute bottom-[20%] left-[15%] w-36 h-24 rounded-2xl overflow-hidden animate-float-3 opacity-90"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 0.9, scale: 1 }}
         transition={{ delay: 0.9, duration: 0.8 }}

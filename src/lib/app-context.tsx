@@ -57,6 +57,7 @@ interface AppContextType {
   removeSlotFromItinerary: (variantId: string, dayIndex: number, slotIndex: number) => void;
   addPoiToItinerary: (variantId: string, dayIndex: number, poi: POI) => void;
   moveSlotInItinerary: (variantId: string, dayIndex: number, fromIndex: number, toIndex: number) => void;
+  updateSlotTime: (variantId: string, dayIndex: number, slotIndex: number, time: string, duration: number) => void;
 }
 
 const defaultTours = [
@@ -122,9 +123,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       startCity: state.startCity,
       transportMode: state.transportMode,
       devMode: state.devMode,
+      cart: state.cart,
+      itinerary: state.itinerary,
+      selectedItineraryId: state.selectedItineraryId,
+      coordinator: state.coordinator,
+      isBooked: state.isBooked,
     };
     localStorage.setItem('travelai_state', JSON.stringify(toPersist));
-  }, [state.currentScreen, state.destination, state.selectedVibes, state.budget, state.pace, state.interests, state.travelers, state.duration, state.startCity, state.transportMode, state.devMode]);
+  }, [state.currentScreen, state.destination, state.selectedVibes, state.budget, state.pace, state.interests, state.travelers, state.duration, state.startCity, state.transportMode, state.devMode, state.cart, state.itinerary, state.selectedItineraryId, state.coordinator, state.isBooked]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -285,29 +291,57 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return rajasthanPOIs;
   }, []);
 
+  const recalcVariants = useCallback((variants: ItineraryVariant[]): ItineraryVariant[] => {
+    return variants.map(v => {
+      const allPois = v.days.flatMap(d => d.slots.filter(s => s.poi && s.type === 'poi').map(s => s.poi!));
+      const baseCost = allPois.reduce((s, p) => s + p.cost, 0);
+      const totalDuration = allPois.reduce((s, p) => s + (p.estimatedDuration || 120), 0);
+      const experienceScore = allPois.length === 0 ? 0 : Math.min(10, Math.round((allPois.reduce((s, p) => s + p.rating, 0) / allPois.length) * 2 * 100) / 100);
+      const totalCost = Math.round(baseCost * 1.4 + (allPois.length > 6 ? 2000 : 0));
+      return {
+        ...v,
+        totalCost,
+        experienceScore,
+        paceScore: v.paceScore,
+      };
+    });
+  }, []);
+
   const removeSlotFromItinerary = useCallback((variantId: string, dayIndex: number, slotIndex: number) => {
-    setState(prev => ({
-      ...prev,
-      itinerary: prev.itinerary.map(v => {
-        if (v.id !== variantId) return v;
+    setState(prev => {
+      const removedPoiId = prev.itinerary.find(v => v.id === variantId)?.days[dayIndex]?.slots[slotIndex]?.poiId;
+      const newItinerary = prev.itinerary.map(v => {
+        if (v.id !== variantId) {
+          if (removedPoiId) {
+            const newDays = v.days.map((day, di) => {
+              if (di !== dayIndex) return day;
+              return { ...day, slots: day.slots.filter(s => s.poiId !== removedPoiId) };
+            });
+            return { ...v, days: newDays };
+          }
+          return v;
+        }
         const newDays = v.days.map((day, di) => {
           if (di !== dayIndex) return day;
           return { ...day, slots: day.slots.filter((_, si) => si !== slotIndex) };
         });
         return { ...v, days: newDays };
-      }),
-    }));
-  }, []);
+      });
+      return { ...prev, itinerary: recalcVariants(newItinerary) };
+    });
+  }, [recalcVariants]);
 
   const addPoiToItinerary = useCallback((variantId: string, dayIndex: number, poi: POI) => {
-    setState(prev => ({
-      ...prev,
-      itinerary: prev.itinerary.map(v => {
-        if (v.id !== variantId) return v;
+    setState(prev => {
+      const newItinerary = prev.itinerary.map(v => {
+        const vDayIndex = Math.min(dayIndex, v.days.length - 1);
         const newDays = v.days.map((day, di) => {
-          if (di !== dayIndex) return day;
+          if (di !== vDayIndex) return day;
+          const exists = day.slots.some(s => s.poiId === poi.poiId);
+          if (exists) return day;
           const lastSlot = day.slots[day.slots.length - 1];
-          const newTime = lastSlot ? `${parseInt(lastSlot.time.split(':')[0]) + 1}:00` : '09:00';
+          const lastHour = lastSlot ? parseInt(lastSlot.time.split(':')[0]) : 8;
+          const newTime = `${(lastHour + 2) % 24}`.padStart(2, '0') + ':00';
           const newSlot = {
             time: newTime,
             poiId: poi.poiId,
@@ -318,21 +352,37 @@ export function AppProvider({ children }: { children: ReactNode }) {
           return { ...day, slots: [...day.slots, newSlot] };
         });
         return { ...v, days: newDays };
-      }),
-    }));
-  }, []);
+      });
+      return { ...prev, itinerary: recalcVariants(newItinerary) };
+    });
+  }, [recalcVariants]);
 
   const moveSlotInItinerary = useCallback((variantId: string, dayIndex: number, fromIndex: number, toIndex: number) => {
     setState(prev => ({
       ...prev,
       itinerary: prev.itinerary.map(v => {
-        if (v.id !== variantId) return v;
         const newDays = v.days.map((day, di) => {
           if (di !== dayIndex) return day;
           const newSlots = [...day.slots];
           const [moved] = newSlots.splice(fromIndex, 1);
           newSlots.splice(toIndex, 0, moved);
           return { ...day, slots: newSlots };
+        });
+        return { ...v, days: newDays };
+      }),
+    }));
+  }, []);
+
+  const updateSlotTime = useCallback((variantId: string, dayIndex: number, slotIndex: number, time: string, duration: number) => {
+    setState(prev => ({
+      ...prev,
+      itinerary: prev.itinerary.map(v => {
+        const newDays = v.days.map((day, di) => {
+          if (di !== dayIndex) return day;
+          return {
+            ...day,
+            slots: day.slots.map((s, si) => si === slotIndex ? { ...s, time, duration } : s),
+          };
         });
         return { ...v, days: newDays };
       }),
@@ -372,6 +422,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         removeSlotFromItinerary,
         addPoiToItinerary,
         moveSlotInItinerary,
+        updateSlotTime,
       }}
     >
       {children}

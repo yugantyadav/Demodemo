@@ -13,7 +13,7 @@ interface ItineraryCustomizerProps {
 }
 
 export default function ItineraryCustomizer({ variant, onClose }: ItineraryCustomizerProps) {
-  const { removeSlotFromItinerary, addPoiToItinerary, moveSlotInItinerary, state } = useApp();
+  const { removeSlotFromItinerary, addPoiToItinerary, moveSlotInItinerary, updateSlotTime, state } = useApp();
   const [selectedDay, setSelectedDay] = useState(0);
   const [showAddPanel, setShowAddPanel] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -163,10 +163,34 @@ export default function ItineraryCustomizer({ variant, onClose }: ItineraryCusto
 
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold truncate" style={{ color: '#000' }}>{slot.poi?.name || 'Transit'}</p>
-                      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                        <span className="flex items-center gap-1"><Clock size={11} /> {slot.duration}m</span>
+                      <div className="flex flex-wrap items-center gap-2 text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
                         <span className="flex items-center gap-1"><MapPin size={11} /> {slot.poi?.city}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: '#e5e7eb' }}>{slot.time}</span>
+                      </div>
+                      {/* Time & Duration Pickers */}
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <label className="flex items-center gap-1 text-[11px] font-medium" style={{ color: '#666' }}>
+                          <Clock size={11} /> Time:
+                          <input
+                            type="time"
+                            value={slot.time || '09:00'}
+                            onChange={(e) => updateSlotTime(variant.id, selectedDay, i, e.target.value, slot.duration)}
+                            className="px-2 py-1 rounded-lg text-[11px] outline-none"
+                            style={{ background: 'white', border: '1px solid #e5e7eb', color: '#000' }}
+                          />
+                        </label>
+                        <label className="flex items-center gap-1 text-[11px] font-medium" style={{ color: '#666' }}>
+                          Duration:
+                          <select
+                            value={slot.duration}
+                            onChange={(e) => updateSlotTime(variant.id, selectedDay, i, slot.time, parseInt(e.target.value))}
+                            className="px-2 py-1 rounded-lg text-[11px] outline-none"
+                            style={{ background: 'white', border: '1px solid #e5e7eb', color: '#000' }}
+                          >
+                            {[30, 45, 60, 90, 120, 150, 180, 240, 300, 360, 420, 480].map(m => (
+                              <option key={m} value={m}>{m >= 60 ? `${Math.floor(m/60)}h${m%60 ? ` ${m%60}m` : ''}` : `${m}m`}</option>
+                            ))}
+                          </select>
+                        </label>
                       </div>
                     </div>
 

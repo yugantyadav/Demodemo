@@ -56,15 +56,20 @@ function ParetoChart({ points }: { points: ParetoPoint[] }) {
 }
 
 export default function ItineraryView() {
-  const { state, selectItinerary, setCoordinator, setCurrentScreen, addToCart, setBooked, addBookedTour } = useApp() as any;
+  const { state, selectItinerary, setCoordinator, setCurrentScreen, addToCart, setBooked, addBookedTour, addPoiToItinerary } = useApp() as any;
   const variants = state.itinerary;
-  const [activeVariant, setActiveVariant] = useState<ItineraryVariant | null>(
-    () => variants.find((v: ItineraryVariant) => v.id === 'it_balanced') || variants[0] || null
+  const [selectedVariantId, setSelectedVariantId] = useState<string>(
+    () => state.selectedItineraryId || (variants.find((v: ItineraryVariant) => v.id === 'it_balanced')?.id) || variants[0]?.id || ''
   );
   const [isBooked, setIsBooked] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeTab, setActiveTab] = useState<'plan'|'recommendations'>('plan');
   const [showCustomizer, setShowCustomizer] = useState(false);
+
+  const activeVariant = useMemo<ItineraryVariant | null>(
+    () => variants.find((v: ItineraryVariant) => v.id === selectedVariantId) || variants[0] || null,
+    [variants, selectedVariantId]
+  );
 
   const pareto = useMemo(() => computeParetoFrontier(variants), [variants]);
 
@@ -90,8 +95,7 @@ export default function ItineraryView() {
   }, [state.cart, state.duration, state.destination]);
 
   const handleSelectVariant = (id: string) => {
-    const v = variants.find((x: ItineraryVariant) => x.id === id);
-    if (v) setActiveVariant(v);
+    setSelectedVariantId(id);
     selectItinerary(id);
   };
 
@@ -198,7 +202,7 @@ export default function ItineraryView() {
             Your personalized journey
           </p>
           <h1 className="text-title-lg font-semibold" style={{ color: 'var(--color-brand-black)' }}>
-            {state.destination} — 3 itinerary options
+            {state.destination} — {activeVariant?.days?.length || 0} day{activeVariant?.days?.length !== 1 ? 's' : ''} itinerary
           </h1>
           <div className="flex items-center gap-4 mt-2">
             <div className="flex items-center gap-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -255,7 +259,7 @@ export default function ItineraryView() {
         <div className="flex gap-2 mb-6">
           <button onClick={()=>setActiveTab('plan')} className="px-5 py-2 rounded-full text-sm font-bold" style={{ background: activeTab==='plan'?'#000':'white', color: activeTab==='plan'?'white':'#000', border: activeTab==='plan'?'1px solid #000':'1px solid #e5e7eb' }}>Your plan</button>
           <button onClick={()=>setActiveTab('recommendations')} className="px-5 py-2 rounded-full text-sm font-bold flex items-center gap-1" style={{ background: activeTab==='recommendations'?'#000':'white', color: activeTab==='recommendations'?'white':'#000', border: activeTab==='recommendations'?'1px solid #000':'1px solid #e5e7eb' }}>
-            <Sparkles size={14} /> Free days • {Math.max(0, state.duration - Math.ceil(state.cart.length/3))} nights free
+            <Sparkles size={14} /> Free days • {Math.max(0, state.duration - (activeVariant?.days?.length || 0))} days free
             {recommendations.length>0 && <span className="ml-1 px-2 py-0.5 rounded-full text-xs" style={{ background: '#fef3c7', color: '#92400e' }}>{recommendations.length} suggestions</span>}
           </button>
         </div>
@@ -280,7 +284,7 @@ export default function ItineraryView() {
             {activeTab==='recommendations' ? (
               <div className="rounded-3xl p-6" style={{ background: 'white', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
                 <h2 className="font-bold text-sm mb-1" style={{ color: '#000' }}>Recommended for your {state.duration} nights</h2>
-                <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>You picked {state.cart.length} place{state.cart.length!==1?'s':''} — {Math.max(0, state.duration*3 - state.cart.length)} slots still free. Add more to fill your trip near {state.destination}:</p>
+                <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>You picked {state.cart.length} place{state.cart.length!==1?'s':''} — {Math.max(0, (activeVariant?.days?.length || state.duration) * 3 - state.cart.length)} slots still free. Add more to fill your trip near {state.destination}:</p>
                 {recommendations.length===0 ? (
                   <p className="text-sm py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>No more suggestions — you&apos;ve covered it all!</p>
                 ) : (
@@ -289,12 +293,14 @@ export default function ItineraryView() {
                       const added = cartIds.has(poi.poiId);
                       return (
                         <div key={poi.poiId} className="rounded-2xl p-3 flex gap-3" style={{ background: 'var(--color-surface-3)' }}>
-                          <div className="w-16 h-16 rounded-xl flex-shrink-0" style={{ background: 'linear-gradient(135deg, #e0e7ff, #fce7f3)' }} />
+                          <div className="w-16 h-16 rounded-xl flex-shrink-0 overflow-hidden">
+                            <img src={poi.imageUrl} alt={poi.name} className="w-full h-full object-cover" />
+                          </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-bold truncate" style={{ color: '#000' }}>{poi.name}</p>
                             <p className="text-xs truncate" style={{ color: 'var(--color-text-muted)' }}>{poi.city} • {poi.estimatedDuration}m • ★{poi.rating}</p>
                             <p className="text-xs mt-1 line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>{poi.description}</p>
-                            <button onClick={() => { if(!added) addToCart(poi); }} disabled={added} className="mt-2 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1" style={{ background: added ? '#22c55e' : '#000', color: 'white', opacity: added?0.7:1 }}>
+                            <button onClick={() => { if(!added) { addToCart(poi); if(activeVariant) addPoiToItinerary(activeVariant.id, Math.min(activeVariant.days.length - 1, 0), poi); } }} disabled={added} className="mt-2 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1" style={{ background: added ? '#22c55e' : '#000', color: 'white', opacity: added?0.7:1 }}>
                               {added ? <><Check size={12}/> Added</> : <><Plus size={12}/> Add to trip</>}
                             </button>
                           </div>
