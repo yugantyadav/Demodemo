@@ -1,10 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency } from '@/lib/utils';
 import { useApp } from '@/lib/app-context';
 import { AlertTriangle, Radio, X, UserPlus } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('./MapView'), { ssr: false, loading: () => (
+  <div className="w-full h-full min-h-[400px] rounded-3xl flex items-center justify-center" style={{ background: 'var(--color-category-teal-4)' }}>
+    <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Loading map...</p>
+  </div>
+)});
 
 interface Tour {
   id: string;
@@ -129,81 +136,14 @@ export default function OperatorConsole() {
 
         {/* Content Area */}
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Map View */}
+          {/* Real Interactive Map */}
           <div className="lg:col-span-2 rounded-3xl overflow-hidden relative"
             style={{ minHeight: 400, background: 'var(--color-category-teal-4)' }}>
-            {/* Simulated Map */}
-            <div className="relative w-full h-full p-6">
-              <div className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage: 'linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)',
-                  backgroundSize: '40px 40px',
-                }} />
-              
-              <button className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-semibold z-10"
-                style={{ background: 'rgba(255,255,255,0.9)', color: 'var(--color-brand-black)' }}>
-                Live Tour Map
-              </button>
-
-              {/* Tour dots */}
-              {tours.filter(t => t.status === 'active').map((tour) => {
-                const positions = [
-                  { x: '30%', y: '30%' },
-                  { x: '65%', y: '40%' },
-                  { x: '45%', y: '70%' },
-                  { x: '75%', y: '25%' },
-                  { x: '20%', y: '60%' },
-                ];
-                const pos = positions[activeTours.indexOf(tour) % positions.length];
-                return (
-                  <motion.button
-                    key={tour.id}
-                    onClick={() => setSelectedTour(tour)}
-                    className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
-                    style={{ left: pos.x, top: pos.y }}
-                    whileHover={{ scale: 1.2 }}
-                  >
-                      <motion.div
-                        className="relative"
-                        animate={{ scale: [1, 1.3, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        <div className="w-4 h-4 rounded-full"
-                          style={{
-                            background: tour.impacted ? 'var(--color-semantic-error)' : 'var(--color-semantic-success)',
-                            boxShadow: '0 0 0 3px rgba(255,255,255,0.8)',
-                          }} />
-                      </motion.div>
-                  </motion.button>
-                );
-              })}
-
-              {/* Selected tour card */}
-              {selectedTour && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl z-10"
-                  style={{ background: 'var(--color-brand-white)', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-sm font-bold">{selectedTour.id} • {selectedTour.customer}</p>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase"
-                      style={{ background: 'var(--color-semantic-attraction-bg)', color: 'var(--color-semantic-attraction-dot)' }}>
-                      {selectedTour.status}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <p style={{ color: 'var(--color-text-muted)' }}>📅 {selectedTour.dates}</p>
-                    <p style={{ color: 'var(--color-text-muted)' }}>👤 {selectedTour.coordinator}</p>
-                    <p style={{ color: 'var(--color-text-muted)' }}>📍 {selectedTour.nextAction}</p>
-                    <p className="font-semibold" style={{ color: 'var(--color-semantic-success)' }}>
-                      Margin: {formatCurrency(selectedTour.margin)}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
+            <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-semibold z-[1000]"
+              style={{ background: 'rgba(255,255,255,0.95)', color: 'var(--color-brand-black)' }}>
+              Live Tour Map
             </div>
+            <MapView activeDestination="all" selectedPOI={null} />
           </div>
 
           {/* Side Panel - Tours */

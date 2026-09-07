@@ -14,6 +14,11 @@ export interface POI {
   tags: string[];
   rating: number;
   estimatedDuration: number;
+  bestTimeToVisit?: string;
+  transportTip?: string;
+  proTip?: string;
+  nearbyAttractions?: string[];
+  entryFeeDetails?: string;
 }
 
 export interface CartItem {

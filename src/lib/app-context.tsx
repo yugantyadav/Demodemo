@@ -54,6 +54,9 @@ interface AppContextType {
   assignCoordinatorToTour: (tourId: string, coordinatorName: string) => void;
   addBookedTour: () => void;
   getPoisForDestination: () => POI[];
+  removeSlotFromItinerary: (variantId: string, dayIndex: number, slotIndex: number) => void;
+  addPoiToItinerary: (variantId: string, dayIndex: number, poi: POI) => void;
+  moveSlotInItinerary: (variantId: string, dayIndex: number, fromIndex: number, toIndex: number) => void;
 }
 
 const defaultTours = [
@@ -282,6 +285,60 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return rajasthanPOIs;
   }, []);
 
+  const removeSlotFromItinerary = useCallback((variantId: string, dayIndex: number, slotIndex: number) => {
+    setState(prev => ({
+      ...prev,
+      itinerary: prev.itinerary.map(v => {
+        if (v.id !== variantId) return v;
+        const newDays = v.days.map((day, di) => {
+          if (di !== dayIndex) return day;
+          return { ...day, slots: day.slots.filter((_, si) => si !== slotIndex) };
+        });
+        return { ...v, days: newDays };
+      }),
+    }));
+  }, []);
+
+  const addPoiToItinerary = useCallback((variantId: string, dayIndex: number, poi: POI) => {
+    setState(prev => ({
+      ...prev,
+      itinerary: prev.itinerary.map(v => {
+        if (v.id !== variantId) return v;
+        const newDays = v.days.map((day, di) => {
+          if (di !== dayIndex) return day;
+          const lastSlot = day.slots[day.slots.length - 1];
+          const newTime = lastSlot ? `${parseInt(lastSlot.time.split(':')[0]) + 1}:00` : '09:00';
+          const newSlot = {
+            time: newTime,
+            poiId: poi.poiId,
+            poi,
+            type: 'poi' as const,
+            duration: poi.estimatedDuration || 120,
+          };
+          return { ...day, slots: [...day.slots, newSlot] };
+        });
+        return { ...v, days: newDays };
+      }),
+    }));
+  }, []);
+
+  const moveSlotInItinerary = useCallback((variantId: string, dayIndex: number, fromIndex: number, toIndex: number) => {
+    setState(prev => ({
+      ...prev,
+      itinerary: prev.itinerary.map(v => {
+        if (v.id !== variantId) return v;
+        const newDays = v.days.map((day, di) => {
+          if (di !== dayIndex) return day;
+          const newSlots = [...day.slots];
+          const [moved] = newSlots.splice(fromIndex, 1);
+          newSlots.splice(toIndex, 0, moved);
+          return { ...day, slots: newSlots };
+        });
+        return { ...v, days: newDays };
+      }),
+    }));
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -312,6 +369,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         assignCoordinatorToTour,
         addBookedTour,
         getPoisForDestination,
+        removeSlotFromItinerary,
+        addPoiToItinerary,
+        moveSlotInItinerary,
       }}
     >
       {children}

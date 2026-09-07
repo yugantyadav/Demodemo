@@ -7,15 +7,23 @@ import { X, Bug, Compass, MapPin, ShoppingCart, FileText, Sparkles, LayoutDashbo
 export default function DevFab() {
   const { state, setCurrentScreen, toggleDevMode, resetApp } = useApp();
   const [open, setOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
   if (!state.devMode && !open) {
     return (
-      <button onClick={() => { toggleDevMode(); setOpen(true); }} className="fixed bottom-5 left-5 w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-black z-50" style={{ background: '#111', border: '1px solid #333' }}>N</button>
+      <button onClick={() => { toggleDevMode(); setOpen(true); }} className="fixed bottom-5 left-5 w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-black z-50 overflow-hidden" style={{ background: '#111', border: '1px solid #333' }}>
+        {!imgError ? (
+          <img src="/user-avatar.svg" alt="User" className="w-full h-full object-cover" onError={() => setImgError(true)} />
+        ) : 'N'}
+      </button>
     );
   }
   return (
     <>
-      <button onClick={() => setOpen(!open)} className="fixed bottom-5 left-5 w-9 h-9 rounded-full flex items-center justify-center text-white z-50" style={{ background: open ? '#fff' : '#111', color: open ? '#000' : '#fff', border: '1px solid #333' }}>
-        {open ? <X size={14} /> : <span className="text-xs font-black">N</span>}
+      <button onClick={() => setOpen(!open)} className="fixed bottom-5 left-5 w-10 h-10 rounded-full flex items-center justify-center text-white z-50 overflow-hidden" style={{ background: open ? '#fff' : '#111', color: open ? '#000' : '#fff', border: '1px solid #333' }}>
+        {open ? <X size={14} /> : (!imgError ? (
+          <img src="/user-avatar.svg" alt="User" className="w-full h-full object-cover" onError={() => setImgError(true)} />
+        ) : <span className="text-xs font-black">N</span>)}
       </button>
       <AnimatePresence>
         {open && (

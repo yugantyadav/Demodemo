@@ -51,9 +51,9 @@ export default function ChatHero() {
         animate={{ opacity: 0.9, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.8 }}
       >
-        <div className="w-full h-full bg-gradient-to-br from-amber-200 to-orange-300 flex items-center justify-center text-4xl">
-          🏰
-        </div>
+        <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?w=400&auto=format&fit=crop&q=80" alt="Rajasthan" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <p className="absolute bottom-2 left-3 text-white text-xs font-bold">Rajasthan</p>
       </motion.div>
 
       <motion.div
@@ -62,9 +62,9 @@ export default function ChatHero() {
         animate={{ opacity: 0.9, scale: 1 }}
         transition={{ delay: 0.7, duration: 0.8 }}
       >
-        <div className="w-full h-full bg-gradient-to-br from-emerald-200 to-teal-300 flex items-center justify-center text-4xl">
-          🌴
-        </div>
+        <img src="https://images.unsplash.com/photo-1548574505-5e239809ee19?w=400&auto=format&fit=crop&q=80" alt="Kerala" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <p className="absolute bottom-2 left-3 text-white text-xs font-bold">Kerala</p>
       </motion.div>
 
       <motion.div
@@ -73,9 +73,9 @@ export default function ChatHero() {
         animate={{ opacity: 0.9, scale: 1 }}
         transition={{ delay: 0.9, duration: 0.8 }}
       >
-        <div className="w-full h-full bg-gradient-to-br from-blue-200 to-indigo-300 flex items-center justify-center text-4xl">
-          🏔️
-        </div>
+        <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=400&auto=format&fit=crop&q=80" alt="Goa" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <p className="absolute bottom-2 left-3 text-white text-xs font-bold">Goa</p>
       </motion.div>
 
       {/* Main Content */}

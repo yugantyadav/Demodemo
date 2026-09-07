@@ -7,7 +7,10 @@ import { computeParetoFrontier } from '@/lib/ga';
 import { formatCurrency } from '@/lib/utils';
 import { rajasthanPOIs, sampleCoordinators } from '@/lib/mock-data';
 import { ItineraryVariant, ParetoPoint } from '@/lib/types';
-import { MapPin, Clock, Home, Check, Download, Share2, Users, CalendarDays, Plus, Sparkles } from 'lucide-react';
+import { MapPin, Clock, Home, Check, Download, Share2, Users, CalendarDays, Plus, Sparkles, Pencil } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const ItineraryCustomizer = dynamic(() => import('./ItineraryCustomizer'), { ssr: false });
 
 const CONFETTI_COLORS = ['#f59e0b', '#22c55e', '#3b82f6', '#ef4444', '#a855f7'];
 
@@ -61,6 +64,7 @@ export default function ItineraryView() {
   const [isBooked, setIsBooked] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeTab, setActiveTab] = useState<'plan'|'recommendations'>('plan');
+  const [showCustomizer, setShowCustomizer] = useState(false);
 
   const pareto = useMemo(() => computeParetoFrontier(variants), [variants]);
 
@@ -210,7 +214,7 @@ export default function ItineraryView() {
         </div>
 
         {/* Variant Tabs */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap items-center gap-2 mb-4">
           {variants.map((v: ItineraryVariant) => {
             const isActive = activeVariant?.id === v.id;
             return (
@@ -234,6 +238,17 @@ export default function ItineraryView() {
               </button>
             );
           })}
+          <button
+            onClick={() => setShowCustomizer(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all active:scale-95"
+            style={{
+              background: 'var(--color-accent-blue)',
+              color: 'white',
+            }}
+          >
+            <Pencil size={14} />
+            Customize
+          </button>
         </div>
 
         {/* Plan / Free-days toggle */}
@@ -495,6 +510,13 @@ export default function ItineraryView() {
           </div>
         </div>
       </div>
+
+      {/* Itinerary Customizer Modal */}
+      <AnimatePresence>
+        {showCustomizer && activeVariant && (
+          <ItineraryCustomizer variant={activeVariant} onClose={() => setShowCustomizer(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
