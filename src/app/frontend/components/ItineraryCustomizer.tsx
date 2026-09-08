@@ -67,8 +67,8 @@ export default function ItineraryCustomizer({ variant, onClose }: ItineraryCusto
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[70] flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.5)' }}
+      className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.5)', zIndex:1000 }}
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}

@@ -19,7 +19,7 @@ export default function CartDrawer() {
             exit={{ opacity: 0 }}
             onClick={toggleCart}
             className="fixed inset-0"
-            style={{ background: 'rgba(0,0,0,0.4)', zIndex: 40 }}
+            style={{ background: 'rgba(0,0,0,0.4)', zIndex: 1000 }}
           />
           <motion.div
             initial={{ x: '100%' }}
@@ -32,7 +32,7 @@ export default function CartDrawer() {
               width: '100%',
               maxWidth: '448px',
               background: '#ffffff',
-              zIndex: 60,
+              zIndex: 1001,
               boxShadow: '-8px 0 32px rgba(0,0,0,0.12)',
             }}
           >

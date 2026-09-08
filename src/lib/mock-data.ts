@@ -787,7 +787,6 @@ export const preferenceQuestions: PreferenceQuestion[] = [
       { value: 'no_restriction', label: 'No restrictions' },
       { value: 'vegetarian', label: 'Vegetarian' },
       { value: 'vegan', label: 'Vegan' },
-      { value: 'halal', label: 'Halal' },
     ],
   },
   {

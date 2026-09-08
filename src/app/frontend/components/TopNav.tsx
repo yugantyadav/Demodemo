@@ -13,7 +13,7 @@ export default function TopNav() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 left-0 right-0 z-[2] flex justify-center px-4 pt-4"
+      className="fixed top-0 left-0 right-0 flex justify-center px-4 pt-4" style={{zIndex:500}}
     >
       <div
         className="flex items-center justify-between w-full max-w-[280px] sm:max-w-[320px] h-12 px-4 rounded-full"

@@ -104,6 +104,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem('travelai_state');
       if (raw) {
         const saved = JSON.parse(raw);
+        if (saved.tours && Array.isArray(saved.tours)) {
+          const seen=new Set(); saved.tours=saved.tours.filter((t:any)=>{ if(seen.has(t.id)) return false; seen.add(t.id); return true; });
+        }
         setState(prev => ({ ...prev, ...saved }));
       }
     } catch {}
@@ -272,8 +275,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState(prev => {
       const variant = prev.itinerary.find(v => v.id === prev.selectedItineraryId) || prev.itinerary[0];
       const cost = variant?.totalCost || 15000;
+      const maxId = Math.max(0, ...prev.tours.map(t => parseInt(t.id.replace('T-','')) || 0));
       const newTour = {
-        id: `T-${1020 + prev.tours.length + 1}`,
+        id: `T-${maxId + 1}`,
         customer: 'You • ' + (prev.travelers.adults) + ' adults',
         destination: prev.destination || 'Rajasthan',
         dates: `Sep ${10 + prev.tours.length}-`+`${15 + prev.tours.length}`,

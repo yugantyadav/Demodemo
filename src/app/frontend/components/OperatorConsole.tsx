@@ -138,8 +138,8 @@ export default function OperatorConsole() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Real Interactive Map */}
           <div className="lg:col-span-2 rounded-3xl overflow-hidden relative"
-            style={{ minHeight: 400, background: 'var(--color-category-teal-4)' }}>
-            <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-semibold z-[1000]"
+            style={{ minHeight: 500, height: 500, background: 'var(--color-category-teal-4)', isolation:'isolate' }}>
+            <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-semibold z-10"
               style={{ background: 'rgba(255,255,255,0.95)', color: 'var(--color-brand-black)' }}>
               Live Tour Map
             </div>
@@ -259,8 +259,8 @@ export default function OperatorConsole() {
         <AnimatePresence>
           {assignFor && (
             <>
-              <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setAssignFor(null)} className="fixed inset-0" style={{ background: 'rgba(0,0,0,0.4)', zIndex: 50 }} />
-              <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }} className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md rounded-3xl p-6" style={{ background: 'white', zIndex: 60, boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+              <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setAssignFor(null)} className="fixed inset-0" style={{ background: 'rgba(0,0,0,0.4)', zIndex: 9998 }} />
+              <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }} className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-3xl p-6" style={{ background: 'white', zIndex: 9999, boxShadow: '0 20px 40px rgba(0,0,0,0.2)', width:'90%', maxWidth:448 }}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-bold" style={{ color: '#000' }}>Assign {assignFor} to tour</h3>
                   <button onClick={()=>setAssignFor(null)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#f5f5f5' }}><X size={14} /></button>
